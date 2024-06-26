@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Financiamento</title>
+<style>
+  body {
+    background-color: #333333; /* cor de fundo preto acinzentado */
+    color: white; /* texto em branco */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  form {
+    display: inline-block;
+    text-align: left;
+  }
+  input[type="number"] {
+    width: 100px;
+    padding: 8px;
+    margin: 5px;
+    box-sizing: border-box;
+  }
+  input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+  <h2>Calculadora de Financiamento</h2>
+  <form id="calcForm">
+    <label for="meses">Número de Meses:</label><br>
+    <input type="number" id="meses" name="meses"><br>
+    <label for="juros">Taxa de Juros Mensal (%):</label><br>
+    <input type="number" id="juros" name="juros"><br>
+    <label for="prestacao">Valor da Prestação:</label><br>
+    <input type="number" id="prestacao" name="prestacao" step="0.01"><br>
+    <label for="financiado">Valor Financiado:</label><br>
+    <input type="number" id="financiado" name="financiado" step="0.01"><br>
+    <input type="submit" value="Calcular">
+  </form>
+
+  <div id="resultado"></div>
+
+  <script>
+    document.getElementById('calcForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Obter valores dos campos
+      let meses = document.getElementById('meses').value.trim();
+      let juros = document.getElementById('juros').value.trim();
+      let prestacao = document.getElementById('prestacao').value.trim();
+      let financiado = document.getElementById('financiado').value.trim();
+
+      // Contar quantos campos estão preenchidos
+      let filledFields = 0;
+      if (meses !== '') filledFields++;
+      if (juros !== '') filledFields++;
+      if (prestacao !== '') filledFields++;
+      if (financiado !== '') filledFields++;
+
+      // Verificar se pelo menos três campos estão preenchidos
+      if (filledFields < 3) {
+        alert('Preencha pelo menos três dos quatro campos para calcular.');
+        return;
+      }
+
+      // Converter valores para números e calcular campos faltantes
+      if (financiado === '' && meses !== '' && juros !== '' && prestacao !== '') {
+        financiado = (((1 - Math.pow(1 + parseFloat(juros) / 100, -parseFloat(meses))) / (parseFloat(juros) / 100))) * parseFloat(prestacao);
+        document.getElementById('financiado').value = financiado.toFixed(2);
+      } else if (prestacao === '' && meses !== '' && juros !== '' && financiado !== '') {
+        prestacao = parseFloat(financiado) * parseFloat(juros) / (1 - Math.pow(1 + parseFloat(juros) / 100, -parseFloat(meses)));
+        document.getElementById('prestacao').value = (prestacao / 100).toFixed(2); // Dividir por 100 antes de exibir
+      } else if (juros === '' && meses !== '' && prestacao !== '' && financiado !== '') {
+        juros = (1 - Math.pow(1 + parseFloat(juros) / 100, -parseFloat(meses))) / (parseFloat(financiado) / parseFloat(prestacao));
+        document.getElementById('juros').value = (juros * 100).toFixed(2);
+      } else if (meses === '' && juros !== '' && prestacao !== '' && financiado !== '') {
+        meses = Math.log(1 / (1 - parseFloat(financiado) * parseFloat(juros) / parseFloat(prestacao))) / Math.log(1 + parseFloat(juros) / 100);
+        document.getElementById('meses').value = Math.ceil(meses);
+      }
+
+      // Calcular o valor financiado q0
+      let q0 = (((1 - Math.pow(1 + parseFloat(juros) / 100, -parseFloat(meses))) / (parseFloat(juros) / 100))) * parseFloat(prestacao);
+
+      // Exibir resultado
+      document.getElementById('resultado').innerHTML = `<p>Valor Financiado (q0): ${q0.toFixed(2)}</p>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Financiamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c2c2c;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container, .result-container {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #3c3c3c;
+            max-width: 400px;
+        }
+        label, input {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input {
+            background-color: #5a5a5a;
+            color: white;
+        }
+        input[type="number"] {
+            text-align: right;
+        }
+        input[type="text"] {
+            text-align: left;
+        }
+        input[readonly] {
+            background-color: #4a4a4a;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #5a5a5a;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #7a7a7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Calculadora de Financiamento</h2>
+            <form id="financingForm">
+                <label for="prestacao">Valor da Prestação (p):</label>
+                <input type="number" id="prestacao" name="prestacao" step="0.01" required>
+
+                <label for="meses">Número de Meses (n):</label>
+                <input type="number" id="meses" name="meses" required>
+
+                <label for="taxaJuros">Taxa de Juros Mensal (j) (opcional):</label>
+                <input type="number" id="taxaJuros" name="taxaJuros" step="0.0001">
+
+                <label for="valorFinanciado">Valor Financiado (q0):</label>
+                <input type="text" id="valorFinanciado" name="valorFinanciado" readonly>
+
+                <button type="button" onclick="calcularFinanciamento()">Calcular</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função para calcular o valor financiado (q0)
+        function calcularValorFinanciado(p, j, n) {
+            const q0 = ((1 - Math.pow((1 + j), -n)) / j) * p;
+            return q0;
+        }
+
+        // Função para calcular a taxa de juros por aproximação
+        function calcularTaxaDeJuros(p, q0, n, precisao = 0.000001) {
+            let j = 0.01; // Chute inicial para a taxa de juros
+            let diferenca = 1;
+            
+            while (diferenca > precisao) {
+                let q0Calculado = calcularValorFinanciado(p, j, n);
+                diferenca = Math.abs(q0Calculado - q0);
+                if (q0Calculado < q0) {
+                    j += 0.0001; // Ajuste da taxa de juros
+                } else {
+                    j -= 0.0001;
+                }
+            }
+            return j;
+        }
+
+        // Função principal para calcular q0 e j
+        function calcularFinanciamento() {
+            const p = parseFloat(document.getElementById('prestacao').value);
+            const n = parseInt(document.getElementById('meses').value);
+            const taxaDeJuros = parseFloat(document.getElementById('taxaJuros').value);
+
+            let q0, j;
+            if (isNaN(taxaDeJuros)) {
+                // Se a taxa de juros não for fornecida, calcular por aproximação
+                q0 = 10000; // Chute inicial para o valor financiado
+                j = calcularTaxaDeJuros(p, q0, n);
+            } else {
+                j = taxaDeJuros;
+                q0 = calcularValorFinanciado(p, j, n);
+            }
+
+            // Preencher o campo de Valor Financiado com o resultado calculado
+            document.getElementById('valorFinanciado').value = q0.toFixed(2);
+        }
+    </script>
+</body>
+</html>

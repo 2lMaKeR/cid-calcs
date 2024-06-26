@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Financiamento</title>
+<style>
+  body {
+    background-color: #333333; /* cor de fundo preto acinzentado */
+    color: white; /* texto em branco */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  form {
+    display: inline-block;
+    text-align: left;
+  }
+  input[type="number"] {
+    width: 100px;
+    padding: 8px;
+    margin: 5px;
+    box-sizing: border-box;
+  }
+  input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+<body>
+  <h2>Calculadora de Financiamento</h2>
+  <form id="calcForm">
+    <label for="meses">Número de Meses:</label><br>
+    <input type="number" id="meses" name="meses" required><br>
+    <label for="juros">Taxa de Juros Mensal (%):</label><br>
+    <input type="number" id="juros" name="juros" required><br>
+    <label for="prestacao">Valor da Prestação:</label><br>
+    <input type="number" id="prestacao" name="prestacao" required><br>
+    <input type="submit" value="Calcular">
+  </form>
+
+  <div id="resultado"></div>
+
+  <script>
+    document.getElementById('calcForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Obter valores dos campos
+      let meses = parseFloat(document.getElementById('meses').value);
+      let juros = parseFloat(document.getElementById('juros').value) / 100; // converter para decimal
+      let prestacao = parseFloat(document.getElementById('prestacao').value);
+
+      // Validar se todos os campos foram preenchidos
+      if (isNaN(meses) || isNaN(juros) || isNaN(prestacao)) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      // Calcular o valor financiado q0
+      let q0 = (((1 - Math.pow(1 + juros, -meses)) / juros)) * prestacao;
+
+      // Exibir resultado
+      document.getElementById('resultado').innerHTML = `<p>Valor Financiado (q0): ${q0.toFixed(2)}</p>`;
+    });
+  </script>
+</body>
+</html>
