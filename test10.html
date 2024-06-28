@@ -74,7 +74,7 @@
         return;
       }
 
-      // Converter valores para números e calcular campos faltantes # modificar equações
+      // Converter valores para números e calcular campos faltantes  ####### aquiiiiiiiiiiiiiiiiiii
       if (financiado === '' && meses !== '' && juros !== '' && prestacao !== '') {
         financiado = (((1 - Math.pow(1 + parseFloat(juros) / 100, -parseFloat(meses))) / (parseFloat(juros) / 100))) * parseFloat(prestacao);
         document.getElementById('financiado').value = financiado.toFixed(2);
